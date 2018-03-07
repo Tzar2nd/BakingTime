@@ -39,6 +39,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     holder.mRecipeName.setText(currentRecipe.getName());
   }
 
+  public void addAll(ArrayList<Recipe> recipes) {
+    mRecipes = recipes;
+  }
+
+  public void clear() {
+    int size = mRecipes.size();
+    mRecipes.clear();
+    notifyItemRangeRemoved(0, size);
+  }
+
   @Override
   public int getItemCount() {
     return mRecipes.size();

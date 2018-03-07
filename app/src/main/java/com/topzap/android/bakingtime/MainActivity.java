@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.topzap.android.bakingtime.POJO.Ingredient;
@@ -25,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
   private static final int RECIPE_LOADER_ID = 1;
 
+  private RecipeAdapter mRecipeAdapter;
+
   @BindView(R.id.rv_main_activity)
   RecyclerView mRecipeRecyclerView;
 
@@ -38,39 +39,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     ArrayList<Recipe> mRecipes = new ArrayList<Recipe>();
 
-    ArrayList<Ingredient> ingredients = createDummyIngredients();
-    ArrayList<RecipeStep> recipeSteps = createDummyRecipeSteps();
-
-    mRecipes.add(new Recipe("1", "Choclate Pudding", ingredients, recipeSteps));
-    mRecipes.add(new Recipe("2", "Ice Cream Sandwich", ingredients, recipeSteps));
-    RecipeAdapter adapter = new RecipeAdapter(this, mRecipes);
-
+    mRecipeAdapter = new RecipeAdapter(this, mRecipes);
     RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
     mRecipeRecyclerView.setLayoutManager(mLayoutManager);
-    mRecipeRecyclerView.setAdapter(adapter);
+    mRecipeRecyclerView.setAdapter(mRecipeAdapter);
 
     // Create the RecipeLoader
     getLoaderManager().restartLoader(RECIPE_LOADER_ID, null, this);
-  }
-
-  private ArrayList<Ingredient> createDummyIngredients() {
-    Ingredient ingredient1 = new Ingredient(1, "Dollop", "Chocolate");
-    Ingredient ingredient2 = new Ingredient(2, "", "");
-    ArrayList<Ingredient> ingredients = new ArrayList<>();
-    ingredients.add(ingredient1);
-    ingredients.add(ingredient2);
-    return ingredients;
-  }
-
-  private ArrayList<RecipeStep> createDummyRecipeSteps() {
-    RecipeStep recipeStep1 = new RecipeStep(0, "Put x in y",
-        "Put x in y", "www.youtube.com", "www.google.com");
-    RecipeStep recipeStep2 = new RecipeStep(1, "burn the food", "make sure to burn the food",
-        "www.youtube.com", "www.google.com");
-    ArrayList<RecipeStep> recipeSteps = new ArrayList<>();
-    recipeSteps.add(recipeStep1);
-    recipeSteps.add(recipeStep2);
-    return recipeSteps;
   }
 
   private boolean checkInternetConnection() {
@@ -94,31 +69,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
   /**
    *
-   * Section for the three methods that interact with the RecipeLoader
+   * onCreateLoader, onLoadFinishe and onLoaderReset methods that interact with the LoaderManager
+   * and return a new array of recipes to the recyclerview adapter.
    *
-   * onCreateLoader
-   * onLoadFinished
-   * onLoadReset
    */
 
   @Override
   public Loader<ArrayList<Recipe>> onCreateLoader(int id, Bundle args) {
-   // Build the Recipe url and begin a new RecipeLoader
     Log.d(TAG, "onCreateLoader: Recipes: started");
 
     return new RecipeLoader(MainActivity.this);
   }
 
   @Override
-  public void onLoadFinished(Loader<ArrayList<Recipe>> loader, ArrayList<Recipe> data) {
+  public void onLoadFinished(Loader<ArrayList<Recipe>> loader, ArrayList<Recipe> recipes) {
     Log.d(TAG, "onLoadFinished: Recipes: finished");
 
-    Toast.makeText(this, "Loader finished successfully", Toast.LENGTH_SHORT).show();
+    mRecipeAdapter.clear();
+    mRecipeAdapter.addAll(recipes);
+    mRecipeAdapter.notifyDataSetChanged();
   }
 
   @Override
   public void onLoaderReset(Loader<ArrayList<Recipe>> loader) {
     Log.d(TAG, "onLoaderReset: Recipes: Reset called!");
-
+    mRecipeRecyclerView.setAdapter(null);
   }
 }

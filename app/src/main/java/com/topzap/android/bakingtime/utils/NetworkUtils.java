@@ -110,8 +110,6 @@ public final class NetworkUtils {
   }
 
   /**
-   *
-   * @param recipeJSON
    * @return recipes ArrayList that contains arraylists of ingredients and recipe steps.
    */
   private static ArrayList<Recipe> extractRecipeDataFromJSON(String recipeJSON) {
@@ -137,8 +135,6 @@ public final class NetworkUtils {
           String measure = jsonIngredient.getString("measure");
           String ingredient = jsonIngredient.getString("ingredient");
           ingredients.add(new Ingredient(quantity, measure, ingredient));
-
-          Log.d(TAG, "extractRecipeDataFromJSON: " + ingredient + ", " + quantity + ", " + measure);
         }
 
         // Extract the recipe steps array
@@ -156,9 +152,6 @@ public final class NetworkUtils {
 
           recipeSteps
               .add(new RecipeStep(stepId, shortDescription, description, videoURL, thumbnailURL));
-          Log.d(TAG,
-              "extractRecipeDataFromJSON: " + stepId + ", " + shortDescription + ", " + description
-                  + videoURL + ", " + thumbnailURL);
         }
 
         recipes.add(new Recipe(id, name, ingredients, recipeSteps));
