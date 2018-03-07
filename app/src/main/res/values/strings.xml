@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">Baking Time</string>
+  <string name="content_desc_food_image">An image of the food</string>
 </resources>

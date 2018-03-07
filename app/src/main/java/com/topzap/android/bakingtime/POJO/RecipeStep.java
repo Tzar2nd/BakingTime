@@ -1,7 +1,9 @@
 package com.topzap.android.bakingtime.POJO;
 
-public class RecipeStep {
-  private int recipeId;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class RecipeStep implements Parcelable {
   private int id;
   private String shortDescription;
   private String description;
@@ -16,6 +18,26 @@ public class RecipeStep {
     this.videoURL = videoURL;
     this.thumbnailURL = thumbnailURL;
   }
+
+  protected RecipeStep(Parcel in) {
+    id = in.readInt();
+    shortDescription = in.readString();
+    description = in.readString();
+    videoURL = in.readString();
+    thumbnailURL = in.readString();
+  }
+
+  public static final Creator<RecipeStep> CREATOR = new Creator<RecipeStep>() {
+    @Override
+    public RecipeStep createFromParcel(Parcel in) {
+      return new RecipeStep(in);
+    }
+
+    @Override
+    public RecipeStep[] newArray(int size) {
+      return new RecipeStep[size];
+    }
+  };
 
   public int getId() {
     return id;
@@ -35,5 +57,19 @@ public class RecipeStep {
 
   public String getThumbnailURL() {
     return thumbnailURL;
+  }
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    dest.writeInt(id);
+    dest.writeString(shortDescription);
+    dest.writeString(description);
+    dest.writeString(videoURL);
+    dest.writeString(thumbnailURL);
   }
 }

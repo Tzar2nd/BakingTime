@@ -2,6 +2,7 @@ package com.topzap.android.bakingtime.data;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +14,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.topzap.android.bakingtime.POJO.Recipe;
 import com.topzap.android.bakingtime.R;
+import com.topzap.android.bakingtime.RecipeActivity;
 import java.util.ArrayList;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
   private Context mContext;
   private ArrayList<Recipe> mRecipes = new ArrayList<>();
+  private static final String mIntentFlag = "RECIPE";
 
   public RecipeAdapter(Context context, ArrayList<Recipe> recipes) {
     mContext = context;
@@ -56,10 +59,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
   public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    @BindView(R.id.iv_recipeImage)
-    ImageView mRecipeImage;
-    @BindView(R.id.tv_recipeName)
-    TextView mRecipeName;
+    @BindView(R.id.iv_recipeImage) ImageView mRecipeImage;
+    @BindView(R.id.tv_recipeName) TextView mRecipeName;
 
     public RecipeViewHolder(View itemView) {
       super(itemView);
@@ -69,8 +70,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onClick(View v) {
-      Toast.makeText(mContext, "Card at : " + getAdapterPosition() + " clicked", Toast.LENGTH_SHORT)
-          .show();
+      Intent intent = new Intent(mContext, RecipeActivity.class);
+      Recipe currentRecipe = mRecipes.get(getAdapterPosition());
+
+      intent.putExtra(mIntentFlag, currentRecipe);
+      mContext.startActivity(intent);
+
     }
   }
 

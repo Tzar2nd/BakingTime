@@ -2,16 +2,16 @@
 <android.support.v7.widget.CardView
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:id="@+id/cv_recipes"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:background="@color/cardview_dark_background"
-  android:layout_margin="@dimen/default_margin_large"
-  android:backgroundTint="@color/colorAccent"
-  android:elevation="3dp"
+  android:layout_margin="@dimen/default_margin_small"
+  app:cardBackgroundColor="@color/colorAccent"
   >
 
-  <LinearLayout
+  <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -19,21 +19,28 @@
 
     <ImageView
       android:id="@+id/iv_recipeImage"
-      android:layout_width="match_parent"
-      android:layout_height="150dp"
-      android:src="@drawable/ic_launcher_foreground"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:src="@drawable/nutella_pie"
+      android:scaleType="centerCrop"
+      android:contentDescription="@string/content_desc_food_image"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintDimensionRatio="H,16:9"
       />
 
     <TextView
       android:id="@+id/tv_recipeName"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="This is a test recipe for a very long recipe"
-      android:padding="@dimen/default_margin_small"
+      android:padding="@dimen/default_margin_large"
+      tools:text="Strawberry Cheesecake"
+      android:textSize="24sp"
       android:lines="1"
       android:ellipsize="end"
+      app:layout_constraintTop_toBottomOf="@id/iv_recipeImage"
       />
 
-  </LinearLayout>
-
+  </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
