@@ -1,4 +1,8 @@
 <resources>
   <string name="app_name">Baking Time</string>
   <string name="content_desc_food_image">An image of the food</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="recipe_image_description">Recipe image description</string>
 </resources>

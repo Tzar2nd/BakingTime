@@ -1,0 +1,56 @@
+<android.support.constraint.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context="com.topzap.android.bakingtime.RecipeStepFragment">
+
+  <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+    android:id="@+id/exo_player_view"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toTopOf="@id/tv_recipe_step"
+    />
+
+  <TextView
+    android:id="@+id/tv_recipe_step"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    tools:text="1. Put the brownies into the oven and turn to gas mark 200f"
+    android:padding="@dimen/default_margin_large"
+    app:layout_constraintTop_toBottomOf="@id/exo_player_view"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toTopOf="@id/btn_back"
+
+    />
+
+  <Button
+    android:id="@+id/btn_back"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:text="Back"
+    app:layout_constraintTop_toBottomOf="@id/tv_recipe_step"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:layout_marginStart="@dimen/default_margin_small"
+    android:layout_marginBottom="@dimen/default_margin_small"
+    />
+
+  <Button
+    android:id="@+id/btn_next"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:text="Next"
+    app:layout_constraintTop_toBottomOf="@id/tv_recipe_step"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:layout_marginEnd="@dimen/default_margin_small"
+    android:layout_marginBottom="@dimen/default_margin_small"
+    />
+
+</android.support.constraint.ConstraintLayout>
