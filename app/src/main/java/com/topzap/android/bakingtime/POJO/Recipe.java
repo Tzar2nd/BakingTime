@@ -2,9 +2,12 @@ package com.topzap.android.bakingtime.POJO;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import java.util.ArrayList;
 
 public class Recipe implements Parcelable {
+
+  private static final String TAG = Recipe.class.getName();
 
   private String id;
   private String name;
@@ -22,8 +25,12 @@ public class Recipe implements Parcelable {
   protected Recipe(Parcel in) {
     id = in.readString();
     name = in.readString();
-    in.readList(mIngredients, null);
-    in.readList(mRecipeSteps, null);
+
+    mIngredients = in.readArrayList(Ingredient.class.getClassLoader());
+    mRecipeSteps = in.readArrayList(RecipeStep.class.getClassLoader());
+
+    //in.readList(mIngredients, null);
+    //in.readList(mRecipeSteps, null);
   }
 
   @Override
@@ -71,5 +78,20 @@ public class Recipe implements Parcelable {
     return id + ", " + name;
   }
 
+  public String getIngredientsString() {
+    StringBuilder ingredientsString = new StringBuilder();
+
+    for (Ingredient ingredient : mIngredients) {
+      ingredientsString.append(ingredient.getIngredient().substring(0, 1).toUpperCase())
+          .append(ingredient.getIngredient().substring(1))
+          .append(" - ")
+          .append(ingredient.getQuantity())
+          .append(" ")
+          .append(ingredient.getMeasure())
+          .append("\n\n");
+    }
+
+    return ingredientsString.toString();
+  }
 
 }

@@ -3,6 +3,7 @@ package com.topzap.android.bakingtime.data;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,12 +71,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onClick(View v) {
-      Intent intent = new Intent(mContext, RecipeActivity.class);
       Recipe currentRecipe = mRecipes.get(getAdapterPosition());
 
-      intent.putExtra(mIntentFlag, currentRecipe);
-      mContext.startActivity(intent);
+      Intent intent = new Intent(mContext, RecipeActivity.class);
 
+      intent.putExtra(mIntentFlag, currentRecipe);
+
+      mContext.startActivity(intent);
     }
   }
 

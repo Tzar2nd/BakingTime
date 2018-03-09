@@ -21,7 +21,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Recipe>> {
 
   private static final String TAG = MainActivity.class.getName();
-
   private static final int RECIPE_LOADER_ID = 1;
 
   private RecipeAdapter mRecipeAdapter;

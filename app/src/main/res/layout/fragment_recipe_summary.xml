@@ -28,7 +28,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/iv_recipe_image"
     android:padding="@dimen/default_margin_large"
-    tools:text="@tools:sample/lorem/random"/>
+    tools:text="@tools:sample/lorem/random" />
 
   <android.support.v7.widget.RecyclerView
     android:id="@+id/rv_recipe_steps"
