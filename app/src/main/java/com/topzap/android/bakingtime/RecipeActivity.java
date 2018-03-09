@@ -28,7 +28,6 @@ public class RecipeActivity extends FragmentActivity
     // Send the position ID to the new fragment
     Bundle bundle = new Bundle();
 
-    RecipeStep currentStep = currentRecipe.getSelectedRecipeStep(position);
     bundle.putParcelableArrayList("STEPS", currentRecipe.getRecipeSteps());
     bundle.putInt("CHOSEN_STEP_ID", position);
 
@@ -61,7 +60,7 @@ public class RecipeActivity extends FragmentActivity
           .getFragment(savedInstanceState, "RecipeStepFragment");
 
       if (fragment instanceof RecipeStepFragment) {
-        transaction.replace(R.id.recipe_list_container, fragment);
+        //transaction.replace(R.id.recipe_list_container, fragment);
       }
     } else {
       // First time setup
