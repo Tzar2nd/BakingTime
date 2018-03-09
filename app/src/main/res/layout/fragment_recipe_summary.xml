@@ -1,46 +1,27 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:orientation="vertical"
   tools:context="com.topzap.android.bakingtime.RecipeSummaryFragment"
   >
 
-  <ImageView
-    android:id="@+id/iv_recipe_image"
-    android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:contentDescription="@string/recipe_image_description"
-    android:scaleType="centerCrop"
-    android:src="@drawable/nutella_pie"
-    app:layout_constraintBottom_toTopOf="@id/tv_ingredients_list"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    />
-
   <TextView
     android:id="@+id/tv_ingredients_list"
+    android:textStyle="italic"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toTopOf="@id/rv_recipe_steps"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/iv_recipe_image"
+    android:layout_height="wrap_content"
     android:padding="@dimen/default_margin_large"
-    tools:text="@tools:sample/lorem/random" />
+    android:lineSpacingExtra="2dp"
+    android:textColor="#AAAAAA"
+    tools:text="bla bla bla bla bla bla"/>
 
-  <android.support.v7.widget.RecyclerView
-    android:id="@+id/rv_recipe_steps"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:padding="@dimen/default_margin_large"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/tv_ingredients_list">
+  <ListView
+    android:id="@+id/lv_recipe_steps"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+  </ListView>
 
 
-  </android.support.v7.widget.RecyclerView>
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

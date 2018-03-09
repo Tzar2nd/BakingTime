@@ -2,8 +2,8 @@ package com.topzap.android.bakingtime.POJO;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Recipe implements Parcelable {
 
@@ -28,9 +28,6 @@ public class Recipe implements Parcelable {
 
     mIngredients = in.readArrayList(Ingredient.class.getClassLoader());
     mRecipeSteps = in.readArrayList(RecipeStep.class.getClassLoader());
-
-    //in.readList(mIngredients, null);
-    //in.readList(mRecipeSteps, null);
   }
 
   @Override
@@ -74,6 +71,15 @@ public class Recipe implements Parcelable {
     return mRecipeSteps;
   }
 
+  public RecipeStep getSelectedRecipeStep(int position) {
+    for(RecipeStep recipeStep : mRecipeSteps) {
+      if (recipeStep.getId() == position) {
+        return recipeStep;
+      }
+    }
+    return null;
+  }
+
   public String getRecipe() {
     return id + ", " + name;
   }
@@ -82,16 +88,27 @@ public class Recipe implements Parcelable {
     StringBuilder ingredientsString = new StringBuilder();
 
     for (Ingredient ingredient : mIngredients) {
-      ingredientsString.append(ingredient.getIngredient().substring(0, 1).toUpperCase())
+      ingredientsString
+          .append("\n")
+          .append(ingredient.getIngredient().substring(0, 1).toUpperCase())
           .append(ingredient.getIngredient().substring(1))
           .append(" - ")
           .append(ingredient.getQuantity())
           .append(" ")
-          .append(ingredient.getMeasure())
-          .append("\n\n");
+          .append(ingredient.getMeasure());
     }
 
     return ingredientsString.toString();
+  }
+
+  public List<String> getRecipeStepsList() {
+    List<String> recipeSteps = new ArrayList<String>();
+
+    for(RecipeStep recipeStep : mRecipeSteps) {
+      recipeSteps.add(recipeStep.getId() + ": " + recipeStep.getShortDescription());
+    }
+
+    return recipeSteps;
   }
 
 }
