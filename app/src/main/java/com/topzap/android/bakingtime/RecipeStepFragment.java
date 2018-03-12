@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +44,8 @@ public class RecipeStepFragment extends Fragment {
   Button backButton;
   @BindView(R.id.btn_next)
   Button nextButton;
+  @BindView(R.id.exo_player_frame)
+  FrameLayout exoPlayerFrame;
   @BindView(R.id.exo_player_view)
   SimpleExoPlayerView playerView;
 
@@ -51,9 +56,7 @@ public class RecipeStepFragment extends Fragment {
   int position;
   int maxSteps;
 
-
   public RecipeStepFragment() {
-    // Required empty public constructor
   }
 
   @Override
@@ -71,7 +74,7 @@ public class RecipeStepFragment extends Fragment {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    if(savedInstanceState != null) {
+    if (savedInstanceState != null) {
       position = savedInstanceState.getInt("CHOSEN_STEP_ID");
       Log.d(TAG, "onActivityCreated: Recieved bundle: " + position);
 
@@ -81,12 +84,10 @@ public class RecipeStepFragment extends Fragment {
       initializeButtons();
 
       description.setText(currentStep.getDescription());
-      playerView.setDefaultArtwork(BitmapFactory.decodeResource
-          (getResources(), R.drawable.nutella_pie));
 
-      if (currentStep.getVideoURL() != null) {
-        initializePlayer(Uri.parse(currentStep.getVideoURL()));
-      }
+      setPlayerVisibility();
+    } else {
+      setPlayerVisibility();
     }
   }
 
@@ -98,7 +99,7 @@ public class RecipeStepFragment extends Fragment {
 
     recipeSteps = getArguments().getParcelableArrayList("STEPS");
 
-    if(savedInstanceState == null) {
+    if (savedInstanceState == null) {
       Log.d(TAG, "onCreateView: NEW FRAG");
       position = getArguments().getInt("CHOSEN_STEP_ID");
 
@@ -108,53 +109,70 @@ public class RecipeStepFragment extends Fragment {
       initializeButtons();
 
       description.setText(currentStep.getDescription());
-      playerView.setDefaultArtwork(BitmapFactory.decodeResource
-          (getResources(), R.drawable.nutella_pie));
-
-      if (currentStep.getVideoURL() != null) {
-        initializePlayer(Uri.parse(currentStep.getVideoURL()));
-      }
     }
 
-      backButton.setOnClickListener(new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          releasePlayer();
-          if (position > 0) {
-            position--;
-            currentStep = recipeSteps.get(position);
-            description.setText(currentStep.getDescription());
+    backButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        releasePlayer();
+        if (position > 0) {
+          position--;
+          currentStep = recipeSteps.get(position);
+          description.setText(currentStep.getDescription());
+          setPlayerVisibility();
 
-            if (currentStep.getVideoURL() != null) {
-              initializePlayer(Uri.parse(currentStep.getVideoURL()));
-            }
+          if (!currentStep.getVideoURL().equals("")) {
+            initializePlayer(Uri.parse(currentStep.getVideoURL()));
           }
-          initializeButtons();
         }
-      });
+        initializeButtons();
+      }
+    });
 
-      nextButton.setOnClickListener(new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          releasePlayer();
+    nextButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        releasePlayer();
 
-          if (position + 1 < maxSteps) {
-            position++;
-            currentStep = recipeSteps.get(position);
-            description.setText(currentStep.getDescription());
+        if (position + 1 < maxSteps) {
+          position++;
+          currentStep = recipeSteps.get(position);
+          description.setText(currentStep.getDescription());
+          setPlayerVisibility();
 
-            if (currentStep.getVideoURL() != null) {
-              Log.d(TAG, "onClick: " + currentStep.getVideoURL());
-              initializePlayer(Uri.parse(currentStep.getVideoURL()));
-            }
+          if (!currentStep.getVideoURL().equals("")) {
+            initializePlayer(Uri.parse(currentStep.getVideoURL()));
           }
-          initializeButtons();
-
-
         }
-      });
+        initializeButtons();
+      }
+    });
 
     return rootView;
+  }
+
+  private void setPlayerVisibility() {
+
+    ConstraintSet set = new ConstraintSet();
+    ConstraintLayout layout;
+    layout = (ConstraintLayout) getActivity().findViewById(R.id.cl_recipe_step);
+
+    if (!currentStep.getVideoURL().equals("")) {
+      exoPlayerFrame.setVisibility(View.VISIBLE);
+      initializePlayer(Uri.parse(currentStep.getVideoURL()));
+
+      // Snap the textview back underneath the player guideline now we know it exists
+      set.clone(layout);
+      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, R.id.center_guideline, ConstraintSet.BOTTOM);
+      set.applyTo(layout);
+
+    } else {
+      exoPlayerFrame.setVisibility(View.GONE);
+      // Hide the entire video frame and snap the constraint back to the parent container view
+      set.clone(layout);
+      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP);
+      set.applyTo(layout);
+    }
   }
 
   private void initializeButtons() {
@@ -185,13 +203,17 @@ public class RecipeStepFragment extends Fragment {
 
       exoPlayer.prepare(mediaSource);
       exoPlayer.setPlayWhenReady(true);
+      playerView.setDefaultArtwork(BitmapFactory.decodeResource
+          (getResources(), R.color.colorText));
     }
   }
 
   private void releasePlayer() {
-    exoPlayer.stop();
-    exoPlayer.release();
-    exoPlayer = null;
+    if (exoPlayer != null) {
+      exoPlayer.stop();
+      exoPlayer.release();
+      exoPlayer = null;
+    }
   }
 
   @Override

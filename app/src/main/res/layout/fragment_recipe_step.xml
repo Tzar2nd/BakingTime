@@ -2,6 +2,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/cl_recipe_step"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   tools:context="com.topzap.android.bakingtime.RecipeStepFragment">
@@ -10,11 +11,12 @@
     android:id="@+id/exo_player_frame"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    app:layout_constraintBottom_toTopOf="@id/tv_recipe_step_description"
+    android:background="@android:color/black"
+    app:layout_constraintBottom_toTopOf="@id/center_guideline"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    android:background="@android:color/black">
+    >
 
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
       android:id="@+id/exo_player_view"
@@ -24,6 +26,14 @@
 
   </FrameLayout>
 
+  <android.support.constraint.Guideline
+    android:id="@+id/center_guideline"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="0.5"
+    />
+
   <TextView
     android:id="@+id/tv_recipe_step_description"
     android:layout_width="0dp"
@@ -32,7 +42,7 @@
     app:layout_constraintBottom_toTopOf="@id/btn_back"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/exo_player_frame"
+    app:layout_constraintTop_toBottomOf="@id/center_guideline"
     tools:text="1. Put the brownies into the oven and turn to gas mark 200f"
 
     />

@@ -76,6 +76,8 @@ public class RecipeSummaryFragment extends Fragment {
     stepsListView.setOnItemClickListener(new OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        view.getFocusables(position);
+        view.setSelected(true);
         mCallback.onRecipeStepSelected(position);
       }
     });
