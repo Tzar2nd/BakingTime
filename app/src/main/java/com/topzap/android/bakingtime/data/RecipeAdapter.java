@@ -2,6 +2,7 @@ package com.topzap.android.bakingtime.data;
 
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
+import com.topzap.android.bakingtime.IngredientWidgetProvider;
 import com.topzap.android.bakingtime.IngredientWidgetService;
 import com.topzap.android.bakingtime.POJO.Recipe;
 import com.topzap.android.bakingtime.R;
@@ -82,15 +85,24 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
       // Create an intent to broadcast to trigger onUpdate in IngredientWidgetProvider
       Intent serviceIntent = new Intent(mContext, IngredientWidgetService.class);
       serviceIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+      AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+      ComponentName thisWidget = new ComponentName(mContext, IngredientWidgetProvider.class);
+      int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+      serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+      appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
 
-      // Get shared preferences and using Gson de-serialize the arraylist of ingredients to be serialized
-      // again after the service has been called by a widget
+      Log.d("RecyclerView OnClick", "onClick: " + appWidgetIds.length);
+
+      // Initialise widget update - Get shared preferences and using Gson de-serialize the arraylist
+      // of ingredients to be serialized again into all widgets
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
       Editor prefsEditor = preferences.edit();
       Gson gson = new Gson();
       String json = gson.toJson(currentRecipe.getIngredients());
       prefsEditor.putString("INGREDIENTS", json);
       prefsEditor.apply();
+
+      // Send the broadcast triggering onUpdate in IngredientWidgetProvider
       mContext.sendBroadcast(serviceIntent);
 
       // Update any active widgets with this recipe ingredients

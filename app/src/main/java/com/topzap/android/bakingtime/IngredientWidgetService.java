@@ -43,7 +43,8 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     initIngredients();
   }
 
-  // when onCreate and onDataSetChanged are called, obtain the preferences
+  // when onCreate and onDataSetChanged are called, de-serialize the arraylist of ingredients
+  // from the shared preferences using Gson and populate the arraylist.
   private void initIngredients() {
     Log.d(TAG, "initIngredients: De-serialising Ingredients ArrayList");
     ingredients.clear();
