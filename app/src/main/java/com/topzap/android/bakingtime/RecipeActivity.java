@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 import com.topzap.android.bakingtime.POJO.Recipe;
-import com.topzap.android.bakingtime.POJO.RecipeStep;
 
 public class RecipeActivity extends FragmentActivity
     implements RecipeSummaryFragment.OnRecipeStepSelectedListener {

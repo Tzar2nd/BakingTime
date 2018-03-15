@@ -1,9 +1,13 @@
 package com.topzap.android.bakingtime.data;
 
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.google.gson.Gson;
+import com.topzap.android.bakingtime.IngredientWidgetService;
 import com.topzap.android.bakingtime.POJO.Recipe;
 import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.RecipeActivity;
@@ -73,8 +79,22 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void onClick(View v) {
       Recipe currentRecipe = mRecipes.get(getAdapterPosition());
 
-      Intent intent = new Intent(mContext, RecipeActivity.class);
+      // Create an intent to broadcast to trigger onUpdate in IngredientWidgetProvider
+      Intent serviceIntent = new Intent(mContext, IngredientWidgetService.class);
+      serviceIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 
+      // Get shared preferences and using Gson de-serialize the arraylist of ingredients to be serialized
+      // again after the service has been called by a widget
+      SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
+      Editor prefsEditor = preferences.edit();
+      Gson gson = new Gson();
+      String json = gson.toJson(currentRecipe.getIngredients());
+      prefsEditor.putString("INGREDIENTS", json);
+      prefsEditor.apply();
+      mContext.sendBroadcast(serviceIntent);
+
+      // Update any active widgets with this recipe ingredients
+      Intent intent = new Intent(mContext, RecipeActivity.class);
       intent.putExtra(mIntentFlag, currentRecipe);
 
       mContext.startActivity(intent);
