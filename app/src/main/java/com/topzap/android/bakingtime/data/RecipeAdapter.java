@@ -82,7 +82,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void onClick(View v) {
       Recipe currentRecipe = mRecipes.get(getAdapterPosition());
 
-      // Create an intent to broadcast to trigger onUpdate in IngredientWidgetProvider
+      // Create an intent to broadcast to onUpdate in IngredientWidgetProvider
       Intent serviceIntent = new Intent(mContext, IngredientWidgetService.class);
       serviceIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
       AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
@@ -90,8 +90,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
       int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
       serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
       appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
-
-      Log.d("RecyclerView OnClick", "onClick: " + appWidgetIds.length);
 
       // Initialise widget update - Get shared preferences and using Gson de-serialize the arraylist
       // of ingredients to be serialized again into all widgets

@@ -12,10 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.topzap.android.bakingtime.POJO.Ingredient;
 import com.topzap.android.bakingtime.POJO.Recipe;
-import com.topzap.android.bakingtime.POJO.RecipeStep;
 import com.topzap.android.bakingtime.data.RecipeAdapter;
+import com.topzap.android.bakingtime.data.RecipeLoader;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Recipe>> {

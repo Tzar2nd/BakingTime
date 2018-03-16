@@ -1,4 +1,4 @@
-package com.topzap.android.bakingtime;
+package com.topzap.android.bakingtime.data;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
