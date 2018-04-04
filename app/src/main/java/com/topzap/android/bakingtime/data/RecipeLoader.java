@@ -3,7 +3,7 @@ package com.topzap.android.bakingtime.data;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
-import com.topzap.android.bakingtime.POJO.Recipe;
+import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.utils.NetworkUtils;
 import java.util.ArrayList;
 

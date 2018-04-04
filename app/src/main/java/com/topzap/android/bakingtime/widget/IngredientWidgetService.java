@@ -1,4 +1,4 @@
-package com.topzap.android.bakingtime;
+package com.topzap.android.bakingtime.widget;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +9,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.topzap.android.bakingtime.POJO.Ingredient;
+import com.topzap.android.bakingtime.model.Ingredient;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 

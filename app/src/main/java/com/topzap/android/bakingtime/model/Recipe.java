@@ -1,4 +1,4 @@
-package com.topzap.android.bakingtime.POJO;
+package com.topzap.android.bakingtime.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,13 +13,17 @@ public class Recipe implements Parcelable {
   private String name;
   private ArrayList<Ingredient> mIngredients = new ArrayList<>();
   private ArrayList<RecipeStep> mRecipeSteps = new ArrayList<>();
+  private Integer mServings;
+  private String mRecipeImage;
 
   public Recipe(String id, String name, ArrayList<Ingredient> ingredients,
-      ArrayList<RecipeStep> recipeSteps) {
+      ArrayList<RecipeStep> recipeSteps, Integer servings, String recipeImage) {
     this.id = id;
     this.name = name;
     this.mIngredients = ingredients;
     this.mRecipeSteps = recipeSteps;
+    this.mServings = servings;
+    this.mRecipeImage = recipeImage;
   }
 
   protected Recipe(Parcel in) {
@@ -28,6 +32,9 @@ public class Recipe implements Parcelable {
 
     mIngredients = in.readArrayList(Ingredient.class.getClassLoader());
     mRecipeSteps = in.readArrayList(RecipeStep.class.getClassLoader());
+
+    mServings = in.readInt();
+    mRecipeImage = in.readString();
   }
 
   @Override
@@ -36,6 +43,8 @@ public class Recipe implements Parcelable {
     dest.writeString(name);
     dest.writeList(mIngredients);
     dest.writeList(mRecipeSteps);
+    dest.writeInt(mServings);
+    dest.writeString(mRecipeImage);
   }
 
   @Override
@@ -70,6 +79,10 @@ public class Recipe implements Parcelable {
   public ArrayList<RecipeStep> getRecipeSteps() {
     return mRecipeSteps;
   }
+
+  public Integer getServings() { return mServings; }
+
+  public String getRecipeImage() { return mRecipeImage; }
 
   public RecipeStep getSelectedRecipeStep(int position) {
     for(RecipeStep recipeStep : mRecipeSteps) {

@@ -5,7 +5,7 @@
   android:id="@+id/cl_recipe_step"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="com.topzap.android.bakingtime.RecipeStepFragment">
+  tools:context="com.topzap.android.bakingtime.fragments.RecipeStepFragment">
 
   <FrameLayout
     android:id="@+id/exo_player_frame"
@@ -44,7 +44,6 @@
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toBottomOf="@id/center_guideline"
     tools:text="1. Put the brownies into the oven and turn to gas mark 200f"
-
     />
 
   <Button

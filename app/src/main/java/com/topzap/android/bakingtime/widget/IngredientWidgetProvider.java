@@ -1,11 +1,12 @@
-package com.topzap.android.bakingtime;
+package com.topzap.android.bakingtime.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
+import com.topzap.android.bakingtime.R;
+import com.topzap.android.bakingtime.widget.IngredientWidgetService;
 
 public class IngredientWidgetProvider extends AppWidgetProvider {
 

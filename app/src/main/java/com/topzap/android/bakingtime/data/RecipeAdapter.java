@@ -1,31 +1,29 @@
 package com.topzap.android.bakingtime.data;
 
-
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
-import com.topzap.android.bakingtime.IngredientWidgetProvider;
-import com.topzap.android.bakingtime.IngredientWidgetService;
-import com.topzap.android.bakingtime.POJO.Recipe;
+import com.squareup.picasso.Picasso;
+import com.topzap.android.bakingtime.widget.IngredientWidgetProvider;
+import com.topzap.android.bakingtime.widget.IngredientWidgetService;
+import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.R;
-import com.topzap.android.bakingtime.RecipeActivity;
+import com.topzap.android.bakingtime.activities.RecipeActivity;
 import java.util.ArrayList;
+import com.squareup.picasso.Picasso;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
@@ -49,7 +47,40 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
   public void onBindViewHolder(RecipeViewHolder holder, int position) {
     Recipe currentRecipe = mRecipes.get(position);
 
-    holder.mRecipeName.setText(currentRecipe.getName());
+    String recipeName = currentRecipe.getName();
+
+    holder.mRecipeName.setText(recipeName);
+    holder.mRecipeName.append(" - Servings: " + currentRecipe.getServings());
+
+    // Use an image id if it is available, or use a default image if it is not
+    if(!currentRecipe.getRecipeImage().equals("")) {
+      Picasso.with(mContext)
+          .load(currentRecipe.getRecipeImage())
+          .placeholder(getImagePlaceholderId(recipeName))
+          .error(getImagePlaceholderId(recipeName))
+          .into(holder.mRecipeImage);
+    } else {
+      holder.mRecipeImage.setImageResource(getImagePlaceholderId(recipeName));
+    }
+
+  }
+
+  public int getImagePlaceholderId(String recipeName) {
+    int imageResourceId;
+
+    if (recipeName.contains(mContext.getString(R.string.recipe_pie))) {
+      imageResourceId = R.drawable.nutella_pie;
+    } else if (recipeName.contains(mContext.getString(R.string.recipe_brownie))) {
+      imageResourceId = R.drawable.brownies;
+    } else if (recipeName.contains(mContext.getString(R.string.recipe_cheesecake))) {
+      imageResourceId = R.drawable.cheesecake;
+    } else if (recipeName.contains(mContext.getString(R.string.recipe_cake))) {
+      imageResourceId = R.drawable.yellow_cake;
+    } else { // default if recipe name does not match anything else
+      imageResourceId = R.mipmap.ic_launcher;
+    }
+
+    return imageResourceId;
   }
 
   public void addAll(ArrayList<Recipe> recipes) {

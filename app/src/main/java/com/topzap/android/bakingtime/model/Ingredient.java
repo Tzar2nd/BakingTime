@@ -1,4 +1,4 @@
-package com.topzap.android.bakingtime.POJO;
+package com.topzap.android.bakingtime.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,4 +1,4 @@
-package com.topzap.android.bakingtime;
+package com.topzap.android.bakingtime.fragments;
 
 
 import android.content.Context;
@@ -31,23 +31,19 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.topzap.android.bakingtime.POJO.RecipeStep;
+import com.topzap.android.bakingtime.R;
+import com.topzap.android.bakingtime.model.RecipeStep;
 import java.util.ArrayList;
 
 public class RecipeStepFragment extends Fragment {
 
   private static final String TAG = RecipeStepFragment.class.getName();
 
-  @BindView(R.id.tv_recipe_step_description)
-  TextView description;
-  @BindView(R.id.btn_back)
-  Button backButton;
-  @BindView(R.id.btn_next)
-  Button nextButton;
-  @BindView(R.id.exo_player_frame)
-  FrameLayout exoPlayerFrame;
-  @BindView(R.id.exo_player_view)
-  SimpleExoPlayerView playerView;
+  @BindView(R.id.tv_recipe_step_description) TextView description;
+  @BindView(R.id.btn_back) Button backButton;
+  @BindView(R.id.btn_next) Button nextButton;
+  @BindView(R.id.exo_player_frame) FrameLayout exoPlayerFrame;
+  @BindView(R.id.exo_player_view) SimpleExoPlayerView playerView;
 
   private SimpleExoPlayer exoPlayer;
 
@@ -163,14 +159,16 @@ public class RecipeStepFragment extends Fragment {
 
       // Snap the textview back underneath the player guideline now we know it exists
       set.clone(layout);
-      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, R.id.center_guideline, ConstraintSet.BOTTOM);
+      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, R.id.center_guideline,
+          ConstraintSet.BOTTOM);
       set.applyTo(layout);
 
     } else {
       exoPlayerFrame.setVisibility(View.GONE);
       // Hide the entire video frame and snap the constraint back to the parent container view
       set.clone(layout);
-      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP);
+      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, layout.getId(),
+          ConstraintSet.TOP);
       set.applyTo(layout);
     }
   }

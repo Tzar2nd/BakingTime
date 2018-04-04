@@ -1,6 +1,5 @@
-package com.topzap.android.bakingtime;
+package com.topzap.android.bakingtime.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,14 +11,20 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.topzap.android.bakingtime.POJO.Recipe;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import com.topzap.android.bakingtime.R;
+import com.topzap.android.bakingtime.model.Recipe;
+import com.topzap.android.bakingtime.utils.Config;
 import java.util.List;
 
 public class RecipeSummaryFragment extends Fragment {
 
   private static final String TAG = RecipeSummaryFragment.class.getName();
   OnRecipeStepSelectedListener mCallback;
+
+  @BindView(R.id.tv_ingredients_list) TextView ingredientsTextView;
+  @BindView(R.id.lv_recipe_steps) ListView stepsListView;
 
   Recipe currentRecipe;
   List<String> recipeSteps;
@@ -51,14 +56,10 @@ public class RecipeSummaryFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_recipe_summary, container, false);
+    ButterKnife.bind(this, rootView);
 
-    currentRecipe = getArguments().getParcelable("RECIPE");
-
-    TextView ingredientsTextView = (TextView) rootView.findViewById(R.id.tv_ingredients_list);
+    currentRecipe = getArguments().getParcelable(Config.KEY_RECIPE);
     ingredientsTextView.setText(currentRecipe.getIngredientsString());
-
-    final ListView stepsListView = (ListView) rootView.findViewById(R.id.lv_recipe_steps);
-
     recipeSteps = currentRecipe.getRecipeStepsList();
 
     if(adapter == null) {

@@ -5,11 +5,11 @@
   android:id="@+id/recipe_list_fragment"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="com.topzap.android.bakingtime.RecipeActivity"
+  tools:context="com.topzap.android.bakingtime.activities.RecipeActivity"
   >
 
   <FrameLayout
-    android:id="@+id/recipe_list_container"
+    android:id="@+id/container_recipe_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
   </FrameLayout>

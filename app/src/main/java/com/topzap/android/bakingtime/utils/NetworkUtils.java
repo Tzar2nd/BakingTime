@@ -1,9 +1,9 @@
 package com.topzap.android.bakingtime.utils;
 
 import android.util.Log;
-import com.topzap.android.bakingtime.POJO.Ingredient;
-import com.topzap.android.bakingtime.POJO.Recipe;
-import com.topzap.android.bakingtime.POJO.RecipeStep;
+import com.topzap.android.bakingtime.model.Ingredient;
+import com.topzap.android.bakingtime.model.Recipe;
+import com.topzap.android.bakingtime.model.RecipeStep;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +20,6 @@ import org.json.JSONObject;
 public final class NetworkUtils {
 
   private static final String TAG = NetworkUtils.class.getName();
-  private static final String url = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
   private static final int READ_TIMEOUT = 10000;
   private static final int CONNECTION_TIMEOUT = 150000;
   private static final String RECIPE_CHAR_SET = "UTF-8";
@@ -30,8 +29,7 @@ public final class NetworkUtils {
   }
 
   public static ArrayList<Recipe> getRecipeData() {
-
-    String jsonResponse = getJsonResponse(url);
+    String jsonResponse = getJsonResponse(Config.RECIPE_BASE_URL);
     ArrayList<Recipe> recipes = extractRecipeDataFromJSON(jsonResponse);
     return recipes;
   }
@@ -123,6 +121,8 @@ public final class NetworkUtils {
 
         String id = jsonRecipe.getString("id");
         String name = jsonRecipe.getString("name");
+        Integer servings = jsonRecipe.getInt("servings");
+        String recipeImage = jsonRecipe.getString("image");
 
         // Extract the ingredients array
         ArrayList<Ingredient> ingredients = new ArrayList<>();
@@ -154,7 +154,7 @@ public final class NetworkUtils {
               .add(new RecipeStep(stepId, shortDescription, description, videoURL, thumbnailURL));
         }
 
-        recipes.add(new Recipe(id, name, ingredients, recipeSteps));
+        recipes.add(new Recipe(id, name, ingredients, recipeSteps, servings, recipeImage));
       }
 
       // Log what is in the recipes

@@ -1,13 +1,17 @@
 <resources>
   <string name="app_name">Baking Time</string>
-  <string name="content_desc_food_image">An image of the food</string>
 
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
   <string name="recipe_image_description">Recipe image description</string>
   <string name="back">Back</string>
   <string name="next">Next</string>
   <string name="appwidget_text">Example Widget</string>
   <string name="configure">Configure</string>
   <string name="add_widget">Add widget</string>
+  <string name="content_desc_food_image">An image of the food</string>
+
+  <!-- Recipe Names -->
+  <string name="recipe_pie">Nutella Pie</string>
+  <string name="recipe_cake">Yellow Cake</string>
+  <string name="recipe_brownie">Brownies</string>
+  <string name="recipe_cheesecake">Cheesecake</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.topzap.android.bakingtime;
+package com.topzap.android.bakingtime.activities;
 
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -7,10 +7,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
-import com.topzap.android.bakingtime.POJO.Recipe;
+import com.topzap.android.bakingtime.R;
+import com.topzap.android.bakingtime.fragments.RecipeStepFragment;
+import com.topzap.android.bakingtime.fragments.RecipeSummaryFragment;
+import com.topzap.android.bakingtime.fragments.RecipeSummaryFragment.OnRecipeStepSelectedListener;
+import com.topzap.android.bakingtime.model.Recipe;
 
 public class RecipeActivity extends FragmentActivity
-    implements RecipeSummaryFragment.OnRecipeStepSelectedListener {
+    implements OnRecipeStepSelectedListener {
 
   private static final String TAG = RecipeActivity.class.getName();
 
@@ -33,7 +37,7 @@ public class RecipeActivity extends FragmentActivity
     recipeStepFragment.setArguments(bundle);
 
     // Send the recipe object to the recipe step fragment
-    transaction.replace(R.id.recipe_list_container, recipeStepFragment);
+    transaction.replace(R.id.container_recipe_list, recipeStepFragment);
     transaction.addToBackStack(null);
     transaction.commit();
   }
@@ -59,7 +63,7 @@ public class RecipeActivity extends FragmentActivity
           .getFragment(savedInstanceState, "RecipeStepFragment");
 
       if (fragment instanceof RecipeStepFragment) {
-        //transaction.replace(R.id.recipe_list_container, fragment);
+        //transaction.replace(R.id.container_recipe_list, fragment);
       }
     } else {
       // First time setup
@@ -68,7 +72,7 @@ public class RecipeActivity extends FragmentActivity
       // Send the recipe object to the recipe summary fragment
       recipeSummaryFragment.setArguments(bundle);
 
-      transaction.replace(R.id.recipe_list_container, recipeSummaryFragment);
+      transaction.replace(R.id.container_recipe_list, recipeSummaryFragment);
       transaction.commit();
     }
   }
@@ -77,7 +81,7 @@ public class RecipeActivity extends FragmentActivity
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
-    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.recipe_list_container);
+    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_recipe_list);
 
     if (fragment instanceof RecipeStepFragment) {
       getSupportFragmentManager().putFragment(outState, "RecipeStepFragment", fragment);
