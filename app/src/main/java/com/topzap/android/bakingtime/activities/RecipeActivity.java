@@ -134,7 +134,6 @@ public class RecipeActivity extends AppCompatActivity
           .replace(R.id.container_recipe_list, recipeStepFragment, "RECIPE_STEPS")
           .commit();
     }
-
   }
 
   @Override

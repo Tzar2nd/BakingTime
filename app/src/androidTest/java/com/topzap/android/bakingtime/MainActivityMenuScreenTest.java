@@ -40,6 +40,7 @@ public class MainActivityMenuScreenTest {
     onView(withId(R.id.rv_main_activity))
         .perform(RecyclerViewActions.actionOnItemAtPosition(ITEM_TO_CLICK, click()));
 
+    // If successful the text view for the ingredients should be present
     onView(withId(R.id.tv_ingredients_list))
         .check(exists());
   }

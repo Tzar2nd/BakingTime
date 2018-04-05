@@ -6,6 +6,10 @@ import android.content.Loader;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +21,7 @@ import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.data.RecipeAdapter;
 import com.topzap.android.bakingtime.data.RecipeLoader;
+import com.topzap.android.bakingtime.widget.SimpleIdlingResource;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -28,7 +33,23 @@ public class MainActivity extends AppCompatActivity implements
 
   private RecipeAdapter mRecipeAdapter;
 
+  @Nullable
+  private SimpleIdlingResource mIdlingResource;
+
   @BindView(R.id.rv_main_activity) RecyclerView mRecipeRecyclerView;
+
+  /**
+   * This method is only called from test.
+   * It creates and returns a new SimpleIdlingResource.
+   */
+  @VisibleForTesting
+  @NonNull
+  public IdlingResource getIdlingResource() {
+    if (mIdlingResource == null) {
+      mIdlingResource = new SimpleIdlingResource();
+    }
+    return mIdlingResource;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
