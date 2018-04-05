@@ -1,12 +1,10 @@
 package com.topzap.android.bakingtime.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import butterknife.BindBool;
 import butterknife.ButterKnife;
@@ -17,7 +15,7 @@ import com.topzap.android.bakingtime.fragments.RecipeSummaryFragment.OnRecipeSte
 import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.utils.Config;
 
-public class RecipeActivity extends FragmentActivity
+public class RecipeActivity extends AppCompatActivity
     implements OnRecipeStepSelectedListener {
 
   private static final String TAG = RecipeActivity.class.getName();
@@ -39,6 +37,8 @@ public class RecipeActivity extends FragmentActivity
     Intent intent = getIntent();
     mRecipeBundle = intent.getExtras();
     mCurrentRecipe = intent.getParcelableExtra(Config.KEY_RECIPE);
+
+    setTitle(mCurrentRecipe.getName() + " Recipe");
 
     // Get an instance of FragmentManager and begin a transaction
     mFragmentManager = getSupportFragmentManager();
@@ -89,6 +89,28 @@ public class RecipeActivity extends FragmentActivity
   }
 
   @Override
+  public void onBackPressed() {
+    Fragment fragment = mFragmentManager.findFragmentByTag("RECIPE_STEPS");
+
+    // If single pane and recipe steps is showing, on a back press swap to the recipe list fragment
+    // instead of going back to the main menu
+    if (!mIsTwoPane) {
+      if (fragment != null && fragment.isVisible()) {
+        RecipeSummaryFragment recipeSummaryFragment = new RecipeSummaryFragment();
+        mRecipeBundle.putInt(Config.KEY_SELECTED_STEP, 0);    // Highlight first step
+        recipeSummaryFragment.setArguments(mRecipeBundle);
+
+        mFragmentManager
+            .beginTransaction()
+            .replace(R.id.container_recipe_list, recipeSummaryFragment)
+            .commit();
+      } else {
+        super.onBackPressed();
+      }
+    }
+  }
+
+  @Override
   public void onRecipeStepSelected(int position) {
 
     Bundle bundle = new Bundle();
@@ -109,7 +131,7 @@ public class RecipeActivity extends FragmentActivity
     } else {
       mFragmentManager
           .beginTransaction()
-          .replace(R.id.container_recipe_list, recipeStepFragment)  // Replace the list with the steps in single pane
+          .replace(R.id.container_recipe_list, recipeStepFragment, "RECIPE_STEPS")
           .commit();
     }
 

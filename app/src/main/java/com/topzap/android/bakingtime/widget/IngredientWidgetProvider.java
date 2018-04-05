@@ -18,10 +18,10 @@ import com.topzap.android.bakingtime.widget.IngredientWidgetService;
 public class IngredientWidgetProvider extends AppWidgetProvider {
   // onUpdate is called in response to ACTION_APPWIDGET_UPDATE and ACTION_APPWIDGET_RESTORED broadcasts
   // and provides RemoteViews for a set of AppWidgets.
+
   @Override
   public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
     // There may be multiple widgets active, so update all of them in a loop
-    Log.d("IngredientWidgetProv", "onUpdate called");
     for (int appWidgetId : appWidgetIds) {
       // Create an intent that calls the service that gets the ingredients ArrayList from SharedPreferences
       Intent serviceIntent = new Intent(context, IngredientWidgetService.class);
@@ -37,8 +37,9 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
       // Attach the serviceIntent as the remote adapter to the listview
       remoteView.setRemoteAdapter(R.id.widget_listview, serviceIntent);
 
+      // Get the recipe name from the shared preferences
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-      String mRecipeName = preferences.getString(Config.KEY_CURRENT_RECIPE_NAME, "Recipe Name");
+      String mRecipeName = preferences.getString(Config.KEY_CURRENT_RECIPE_NAME, "");
       remoteView.setTextViewText(R.id.widget_header, mRecipeName);
 
       // Update the current widget (using appWidgetId) to the current remoteView
@@ -64,26 +65,6 @@ public class IngredientWidgetProvider extends AppWidgetProvider {
   @Override
   public void onReceive(Context context, Intent intent) {
     super.onReceive(context, intent);
-
-    /*
-    RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
-
-    // Update text, images, whatever - here
-    String header = intent.getStringExtra(Config.KEY_CURRENT_RECIPE_NAME);
-    Log.d("HEADER", "onReceive: " + header);
-    //remoteViews.setTextViewText(R.id.widget_header, header);
-
-    // Trigger widget layout update
-    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-    ComponentName thisWidget = new ComponentName(context, IngredientWidgetProvider.class);
-    appWidgetManager.updateAppWidget(thisWidget, remoteViews);
-
-    //int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-
-   // appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_header);
-   */
-
-
   }
 }
 

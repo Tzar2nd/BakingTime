@@ -25,10 +25,7 @@ public class IngredientWidgetService extends RemoteViewsService {
 
 class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-  private static final String TAG = "ListRemoteViewsFactory";
-
   private ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-  private String mRecipeName;
   private Context mContext;
 
   public ListRemoteViewsFactory(Context applicationContext) {
@@ -49,16 +46,12 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
   // when onCreate and onDataSetChanged are called, de-serialize the arraylist of ingredients
   // from the shared preferences using Gson and populate the arraylist.
   private void initIngredients() {
-    Log.d(TAG, "initIngredients: De-serialising Ingredients ArrayList");
     ingredients.clear();
 
     SharedPreferences prefs = PreferenceManager
         .getDefaultSharedPreferences(mContext.getApplicationContext());
 
-    // Get the recipe title first
-    mRecipeName = prefs.getString(Config.KEY_CURRENT_RECIPE_NAME, "");
-    Log.d(TAG, "initIngredients: " + mRecipeName);
-
+    // Deserialize the ingredients from String back to an Ingredients ArrayList
     Gson gson = new Gson();
     String json = prefs.getString(Config.KEY_INGREDIENTS, "");
     Type type = new TypeToken<ArrayList<Ingredient>>() {
@@ -80,8 +73,15 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
   public RemoteViews getViewAt(int position) {
     Ingredient currentIngredient = ingredients.get(position);
 
-    RemoteViews row = new RemoteViews(mContext.getPackageName(), android.R.layout.simple_list_item_1);
-    row.setTextViewText(android.R.id.text1, currentIngredient.getIngredient());
+    // Format each row of the widget list view to show an ingredient detail
+    RemoteViews row = new RemoteViews(mContext.getPackageName(),
+        android.R.layout.simple_list_item_1);
+    row.setTextViewText(android.R.id.text1,
+        currentIngredient.getQuantity()
+            + " "
+            + currentIngredient.getMeasure()
+            + " "
+            + currentIngredient.getIngredient());
 
     return row;
   }

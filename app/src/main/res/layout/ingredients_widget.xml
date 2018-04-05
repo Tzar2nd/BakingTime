@@ -11,9 +11,10 @@
     android:id="@+id/widget_header"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorAccent"
+    android:background="@color/colorPrimary"
     android:textColor="@color/colorText"
     tools:text="Recipe Name"
+    android:textSize="@dimen/widget_header_size"
     android:padding="@dimen/default_margin_large"
     />
 
@@ -22,7 +23,7 @@
     android:textStyle="bold|italic"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorAccent"
     android:contentDescription="@string/appwidget_text"
     android:text="@string/appwidget_text"
     android:textColor="#ffffff"

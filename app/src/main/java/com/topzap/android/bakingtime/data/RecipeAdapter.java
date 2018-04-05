@@ -32,6 +32,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
   private Context mContext;
   private ArrayList<Recipe> mRecipes = new ArrayList<>();
   private static final String mIntentFlag = "RECIPE";
+  private Recipe mCurrentRecipe;
 
   public RecipeAdapter(Context context, ArrayList<Recipe> recipes) {
     mContext = context;
@@ -47,17 +48,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
   @Override
   public void onBindViewHolder(RecipeViewHolder holder, int position) {
-    Recipe currentRecipe = mRecipes.get(position);
+    mCurrentRecipe = mRecipes.get(position);
 
-    String recipeName = currentRecipe.getName();
+    String recipeName = mCurrentRecipe.getName();
 
     holder.mRecipeName.setText(recipeName);
-    holder.mRecipeName.append(" - Servings: " + currentRecipe.getServings());
+    holder.mRecipeName.append(" - Servings: " + mCurrentRecipe.getServings());
 
     // Use an image id if it is available, or use a default image if it is not
-    if(!currentRecipe.getRecipeImage().equals("")) {
+    if(!mCurrentRecipe.getRecipeImage().equals("")) {
       Picasso.with(mContext)
-          .load(currentRecipe.getRecipeImage())
+          .load(mCurrentRecipe.getRecipeImage())
           .placeholder(getImagePlaceholderId(recipeName))
           .error(getImagePlaceholderId(recipeName))
           .into(holder.mRecipeImage);
@@ -113,43 +114,51 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onClick(View v) {
-      Recipe currentRecipe = mRecipes.get(getAdapterPosition());
+      mCurrentRecipe = mRecipes.get(getAdapterPosition());
+
+      updateAllWidgets();
+
+      // Start the RecipeActivity class, sending the current recipe via an intent
+      Intent intent = new Intent(mContext, RecipeActivity.class);
+      intent.putExtra(mIntentFlag, mCurrentRecipe);
+      mContext.startActivity(intent);
+    }
+
+    /**
+     * Creates a serviceIntent to notify the service, and triggers a refresh of all widgets
+     * listviews and renames the recipe header on all widgets.
+     */
+    private void updateAllWidgets() {
 
       // Create an intent to broadcast to onUpdate in IngredientWidgetProvider
       Intent serviceIntent = new Intent(mContext, IngredientWidgetService.class);
       serviceIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-      serviceIntent.putExtra(Config.KEY_CURRENT_RECIPE_NAME, currentRecipe.getName());
 
-      // Get an instance of appWidgetManager and up
+      // Get an instance of appWidgetManager and get all remoteViews and thisWidget
       AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
       RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget);
       ComponentName thisWidget = new ComponentName(mContext, IngredientWidgetProvider.class);
-      Log.d("CLICK", "onClick: " + currentRecipe.getName());
-      remoteViews.setTextViewText(R.id.widget_header, currentRecipe.getName()); // Set the recipe name
 
+      // Set the recipe name
+      remoteViews.setTextViewText(R.id.widget_header, mCurrentRecipe.getName());
+
+      // Get app widget Ids
       int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
       serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 
-      appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
+      // Commit the recipe name and notify the list view to update
       appWidgetManager.updateAppWidget(thisWidget, remoteViews);
+      appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
 
       // Get shared preferences and use Gson to serialize the arraylist of ingredients
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
       Editor prefsEditor = preferences.edit();
       Gson gson = new Gson();
-      String json = gson.toJson(currentRecipe.getIngredients());
-      prefsEditor.putString("INGREDIENTS", json);
-      prefsEditor.putString(Config.KEY_CURRENT_RECIPE_NAME, currentRecipe.getName());
+      String json = gson.toJson(mCurrentRecipe.getIngredients());
+      prefsEditor.putString(Config.KEY_INGREDIENTS, json);
+      prefsEditor.putString(Config.KEY_CURRENT_RECIPE_NAME, mCurrentRecipe.getName());
       prefsEditor.apply();
 
-      // Send the broadcast triggering onUpdate in IngredientWidgetProvider
-      mContext.sendBroadcast(serviceIntent);
-
-      // Start the RecipeActivity class, sending the current recipe via an intent
-      Intent intent = new Intent(mContext, RecipeActivity.class);
-      intent.putExtra(mIntentFlag, currentRecipe);
-
-      mContext.startActivity(intent);
     }
   }
 
