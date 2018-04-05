@@ -33,6 +33,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.model.RecipeStep;
+import com.topzap.android.bakingtime.utils.Config;
 import java.util.ArrayList;
 
 public class RecipeStepFragment extends Fragment {
@@ -63,7 +64,7 @@ public class RecipeStepFragment extends Fragment {
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putInt("CHOSEN_STEP_ID", position);
+    outState.putInt(Config.KEY_SELECTED_STEP, position);
     Log.w(TAG, "onSaveInstanceState: Added bundle with position: " + position);
   }
 
@@ -71,7 +72,7 @@ public class RecipeStepFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     if (savedInstanceState != null) {
-      position = savedInstanceState.getInt("CHOSEN_STEP_ID");
+      position = savedInstanceState.getInt(Config.KEY_SELECTED_STEP);
       Log.d(TAG, "onActivityCreated: Recieved bundle: " + position);
 
       currentStep = recipeSteps.get(position);
@@ -93,11 +94,11 @@ public class RecipeStepFragment extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_recipe_step, container, false);
     ButterKnife.bind(this, rootView);
 
-    recipeSteps = getArguments().getParcelableArrayList("STEPS");
+    recipeSteps = getArguments().getParcelableArrayList(Config.KEY_SELECTED_RECIPE_STEPS);
 
     if (savedInstanceState == null) {
       Log.d(TAG, "onCreateView: NEW FRAG");
-      position = getArguments().getInt("CHOSEN_STEP_ID");
+      position = getArguments().getInt(Config.KEY_SELECTED_STEP);
 
       currentStep = recipeSteps.get(position);
       maxSteps = recipeSteps.size();

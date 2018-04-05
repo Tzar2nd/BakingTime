@@ -9,7 +9,9 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.model.Ingredient;
+import com.topzap.android.bakingtime.utils.Config;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -25,8 +27,9 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
   private static final String TAG = "ListRemoteViewsFactory";
 
-  ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
-  Context mContext;
+  private ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+  private String mRecipeName;
+  private Context mContext;
 
   public ListRemoteViewsFactory(Context applicationContext) {
     mContext = applicationContext;
@@ -48,17 +51,24 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
   private void initIngredients() {
     Log.d(TAG, "initIngredients: De-serialising Ingredients ArrayList");
     ingredients.clear();
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
-    Gson gson = new Gson();
 
-    String json = prefs.getString("INGREDIENTS", "");
-    Type type = new TypeToken<ArrayList<Ingredient>>(){}.getType();
+    SharedPreferences prefs = PreferenceManager
+        .getDefaultSharedPreferences(mContext.getApplicationContext());
+
+    // Get the recipe title first
+    mRecipeName = prefs.getString(Config.KEY_CURRENT_RECIPE_NAME, "");
+    Log.d(TAG, "initIngredients: " + mRecipeName);
+
+    Gson gson = new Gson();
+    String json = prefs.getString(Config.KEY_INGREDIENTS, "");
+    Type type = new TypeToken<ArrayList<Ingredient>>() {
+    }.getType();
     ingredients = gson.fromJson(json, type);
+
   }
 
   @Override
   public void onDestroy() {
-
   }
 
   @Override

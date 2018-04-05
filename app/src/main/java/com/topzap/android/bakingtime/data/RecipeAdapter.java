@@ -8,22 +8,24 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
+import com.topzap.android.bakingtime.utils.Config;
 import com.topzap.android.bakingtime.widget.IngredientWidgetProvider;
 import com.topzap.android.bakingtime.widget.IngredientWidgetService;
 import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.activities.RecipeActivity;
 import java.util.ArrayList;
-import com.squareup.picasso.Picasso;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
@@ -116,25 +118,34 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
       // Create an intent to broadcast to onUpdate in IngredientWidgetProvider
       Intent serviceIntent = new Intent(mContext, IngredientWidgetService.class);
       serviceIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+      serviceIntent.putExtra(Config.KEY_CURRENT_RECIPE_NAME, currentRecipe.getName());
+
+      // Get an instance of appWidgetManager and up
       AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+      RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget);
       ComponentName thisWidget = new ComponentName(mContext, IngredientWidgetProvider.class);
+      Log.d("CLICK", "onClick: " + currentRecipe.getName());
+      remoteViews.setTextViewText(R.id.widget_header, currentRecipe.getName()); // Set the recipe name
+
       int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
       serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-      appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
 
-      // Initialise widget update - Get shared preferences and using Gson de-serialize the arraylist
-      // of ingredients to be serialized again into all widgets
+      appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
+      appWidgetManager.updateAppWidget(thisWidget, remoteViews);
+
+      // Get shared preferences and use Gson to serialize the arraylist of ingredients
       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
       Editor prefsEditor = preferences.edit();
       Gson gson = new Gson();
       String json = gson.toJson(currentRecipe.getIngredients());
       prefsEditor.putString("INGREDIENTS", json);
+      prefsEditor.putString(Config.KEY_CURRENT_RECIPE_NAME, currentRecipe.getName());
       prefsEditor.apply();
 
       // Send the broadcast triggering onUpdate in IngredientWidgetProvider
       mContext.sendBroadcast(serviceIntent);
 
-      // Update any active widgets with this recipe ingredients
+      // Start the RecipeActivity class, sending the current recipe via an intent
       Intent intent = new Intent(mContext, RecipeActivity.class);
       intent.putExtra(mIntentFlag, currentRecipe);
 

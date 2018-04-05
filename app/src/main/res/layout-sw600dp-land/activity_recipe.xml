@@ -12,8 +12,8 @@
   <!-- Ingredients and list of steps -->
   <FrameLayout
     android:id="@+id/container_recipe_list"
-    android:layout_width="0dp"
-    android:layout_height="match_parent"
+    android:layout_width="300dp"
+    android:layout_height="0dp"
     app:layout_constraintRight_toLeftOf="@id/container_recipe_step_detail"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintTop_toTopOf="parent"
@@ -22,16 +22,16 @@
     >
   </FrameLayout>
 
+  <!-- Recipe step detail -->
   <FrameLayout
     android:id="@+id/container_recipe_step_detail"
     android:layout_width="0dp"
-    android:layout_height="match_parent"
+    android:layout_height="0dp"
     app:layout_constraintHorizontal_weight="0.7"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintLeft_toRightOf="@id/container_recipe_list"
     app:layout_constraintRight_toRightOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-
     >
   </FrameLayout>
 
