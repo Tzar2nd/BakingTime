@@ -3,11 +3,10 @@ package com.topzap.android.bakingtime.fragments;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +15,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -31,27 +32,37 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.model.RecipeStep;
 import com.topzap.android.bakingtime.utils.Config;
+import com.topzap.android.bakingtime.utils.Utils;
 import java.util.ArrayList;
 
 public class RecipeStepFragment extends Fragment {
 
   private static final String TAG = RecipeStepFragment.class.getName();
 
-  @BindView(R.id.tv_recipe_step_description) TextView description;
-  @BindView(R.id.btn_back) Button backButton;
-  @BindView(R.id.btn_next) Button nextButton;
-  @BindView(R.id.exo_player_frame) FrameLayout exoPlayerFrame;
-  @BindView(R.id.exo_player_view) SimpleExoPlayerView playerView;
+  @BindView(R.id.tv_recipe_step_description) TextView mDescription;
+  @BindView(R.id.btn_back) Button mBackButton;
+  @BindView(R.id.btn_next) Button mNextButton;
+  @BindView(R.id.exo_player_frame) FrameLayout mExoPlayerFrame;
+  @BindView(R.id.exo_player_view) SimpleExoPlayerView mPlayerView;
+  @BindView(R.id.iv_no_video) ImageView mImageViewNoVideo;
 
-  private SimpleExoPlayer exoPlayer;
+  // ButterKnife Resource binding
+  @BindDrawable(R.mipmap.icon_cupcake) Drawable mRecipeDefaultImage;
 
-  RecipeStep currentStep;
-  ArrayList<RecipeStep> recipeSteps;
-  int position;
-  int maxSteps;
+  private SimpleExoPlayer mExoPlayer;
+
+  private RecipeStep mCurrentStep;
+  private ArrayList<RecipeStep> mRecipeSteps;
+  private int mPosition;
+  private int mMaxSteps;
+  private long mPlayerPosition;
+  private String mRecipeDescription;
+  private String mThumbnailUrl;
+  private String mVideoUrl;
 
   public RecipeStepFragment() {
   }
@@ -62,26 +73,17 @@ public class RecipeStepFragment extends Fragment {
   }
 
   @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    outState.putInt(Config.KEY_SELECTED_STEP, position);
-    Log.w(TAG, "onSaveInstanceState: Added bundle with position: " + position);
-  }
-
-  @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     if (savedInstanceState != null) {
-      position = savedInstanceState.getInt(Config.KEY_SELECTED_STEP);
-      Log.d(TAG, "onActivityCreated: Recieved bundle: " + position);
 
-      currentStep = recipeSteps.get(position);
-      maxSteps = recipeSteps.size();
+      // Get the current step parameters
+      mPosition = savedInstanceState.getInt(Config.KEY_SELECTED_STEP);
+      mPlayerPosition = savedInstanceState.getLong(Config.KEY_EXO_PLAYER_POSITION);
+      setCurrentRecipeStepData(mPosition);
+      mDescription.setText(mRecipeDescription);
 
       initializeButtons();
-
-      description.setText(currentStep.getDescription());
-
       setPlayerVisibility();
     } else {
       setPlayerVisibility();
@@ -94,51 +96,52 @@ public class RecipeStepFragment extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_recipe_step, container, false);
     ButterKnife.bind(this, rootView);
 
-    recipeSteps = getArguments().getParcelableArrayList(Config.KEY_SELECTED_RECIPE_STEPS);
+    mRecipeSteps = getArguments().getParcelableArrayList(Config.KEY_SELECTED_RECIPE_STEPS);
 
     if (savedInstanceState == null) {
       Log.d(TAG, "onCreateView: NEW FRAG");
-      position = getArguments().getInt(Config.KEY_SELECTED_STEP);
+      mPosition = getArguments().getInt(Config.KEY_SELECTED_STEP);
 
-      currentStep = recipeSteps.get(position);
-      maxSteps = recipeSteps.size();
+      setCurrentRecipeStepData(mPosition);
+      mDescription.setText(mRecipeDescription);
 
       initializeButtons();
 
-      description.setText(currentStep.getDescription());
+    } else {
+      mPlayerPosition = savedInstanceState.getLong(Config.KEY_EXO_PLAYER_POSITION);
     }
 
-    backButton.setOnClickListener(new OnClickListener() {
+    mBackButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
         releasePlayer();
-        if (position > 0) {
-          position--;
-          currentStep = recipeSteps.get(position);
-          description.setText(currentStep.getDescription());
+        if (mPosition > 0) {
+          mPosition--;
+          setCurrentRecipeStepData(mPosition);
+          mDescription.setText(mRecipeDescription);
           setPlayerVisibility();
 
-          if (!currentStep.getVideoURL().equals("")) {
-            initializePlayer(Uri.parse(currentStep.getVideoURL()));
+          if (!Utils.isEmptyString(mVideoUrl)) {
+            initializePlayer(Uri.parse(mVideoUrl));
           }
         }
         initializeButtons();
       }
     });
 
-    nextButton.setOnClickListener(new OnClickListener() {
+    mNextButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
         releasePlayer();
 
-        if (position + 1 < maxSteps) {
-          position++;
-          currentStep = recipeSteps.get(position);
-          description.setText(currentStep.getDescription());
+        if (mPosition + 1 < mMaxSteps) {
+          mPosition++;
+          setCurrentRecipeStepData(mPosition);
+          mDescription.setText(mRecipeDescription);
           setPlayerVisibility();
 
-          if (!currentStep.getVideoURL().equals("")) {
-            initializePlayer(Uri.parse(currentStep.getVideoURL()));
+          if (!Utils.isEmptyString(mVideoUrl)) {
+            initializePlayer(Uri.parse(mVideoUrl));
           }
         }
         initializeButtons();
@@ -148,71 +151,95 @@ public class RecipeStepFragment extends Fragment {
     return rootView;
   }
 
+  private void setCurrentRecipeStepData(int position) {
+    mCurrentStep = mRecipeSteps.get(position);
+    mVideoUrl = mCurrentStep.getVideoURL();
+    mRecipeDescription = mCurrentStep.getDescription();
+    mMaxSteps = mRecipeSteps.size();
+    mThumbnailUrl = mCurrentStep.getThumbnailURL();
+  }
+
+  /**
+   * Initialize video player if there is a video url else show an image instead
+   */
   private void setPlayerVisibility() {
-
-    ConstraintSet set = new ConstraintSet();
-    ConstraintLayout layout;
-    layout = (ConstraintLayout) getActivity().findViewById(R.id.cl_recipe_step);
-
-    if (!currentStep.getVideoURL().equals("")) {
-      exoPlayerFrame.setVisibility(View.VISIBLE);
-      initializePlayer(Uri.parse(currentStep.getVideoURL()));
-
-      // Snap the textview back underneath the player guideline now we know it exists
-      set.clone(layout);
-      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, R.id.center_guideline,
-          ConstraintSet.BOTTOM);
-      set.applyTo(layout);
-
+    if (!Utils.isEmptyString(mVideoUrl)) {
+      Log.d(TAG, "setPlayerVisibility: Launching Player " + mVideoUrl);
+      ButterKnife.apply(mImageViewNoVideo, Utils.VISIBILITY, View.GONE);
+      initializePlayer(Uri.parse(mCurrentStep.getVideoURL()));
     } else {
-      exoPlayerFrame.setVisibility(View.GONE);
-      // Hide the entire video frame and snap the constraint back to the parent container view
-      set.clone(layout);
-      set.connect(R.id.tv_recipe_step_description, ConstraintSet.TOP, layout.getId(),
-          ConstraintSet.TOP);
-      set.applyTo(layout);
+      Log.d(TAG, "setPlayerVisibility: Setting ImageView");
+      ButterKnife.apply(mImageViewNoVideo, Utils.VISIBILITY, View.VISIBLE);
+
+      if (!Utils.isEmptyString(mThumbnailUrl)) {
+        Picasso.with(getContext())
+            .load(mThumbnailUrl)
+            .placeholder(mRecipeDefaultImage)
+            .error(mRecipeDefaultImage)
+            .into(mImageViewNoVideo);
+      } else {
+        mImageViewNoVideo.setImageDrawable(mRecipeDefaultImage);
+      }
     }
   }
 
   private void initializeButtons() {
-    if (currentStep.getId() == 0) {
-      backButton.setVisibility(View.INVISIBLE);
+    if (mCurrentStep.getId() == 0) {
+      mBackButton.setVisibility(View.INVISIBLE);
     } else {
-      backButton.setVisibility(View.VISIBLE);
+      mBackButton.setVisibility(View.VISIBLE);
     }
 
-    if (currentStep.getId() == recipeSteps.size() - 1) {
-      nextButton.setVisibility(View.INVISIBLE);
+    if (mCurrentStep.getId() == mRecipeSteps.size() - 1) {
+      mNextButton.setVisibility(View.INVISIBLE);
     } else {
-      nextButton.setVisibility(View.VISIBLE);
+      mNextButton.setVisibility(View.VISIBLE);
     }
   }
 
   private void initializePlayer(Uri mediaUri) {
-    if (exoPlayer == null) {
-
+    if (mExoPlayer == null) {
       TrackSelector trackSelector = new DefaultTrackSelector();
       LoadControl loadControl = new DefaultLoadControl();
-      exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
-      playerView.setPlayer(exoPlayer);
+      mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+      mPlayerView.setPlayer(mExoPlayer);
 
       String userAgent = Util.getUserAgent(getContext(), "Baking Time");
       MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
           getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
 
-      exoPlayer.prepare(mediaSource);
-      exoPlayer.setPlayWhenReady(true);
-      playerView.setDefaultArtwork(BitmapFactory.decodeResource
+      mExoPlayer.prepare(mediaSource);
+      mExoPlayer.setPlayWhenReady(true);
+      mExoPlayer.seekTo(mPlayerPosition);
+
+      mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
           (getResources(), R.color.colorText));
     }
   }
 
   private void releasePlayer() {
-    if (exoPlayer != null) {
-      exoPlayer.stop();
-      exoPlayer.release();
-      exoPlayer = null;
+    if (mExoPlayer != null) {
+      mExoPlayer.stop();
+      mExoPlayer.release();
+      mExoPlayer = null;
     }
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putInt(Config.KEY_SELECTED_STEP, mPosition);
+    outState.putLong(Config.KEY_EXO_PLAYER_POSITION, mPlayerPosition);
+    outState.putString(Config.KEY_VIDEO_URL, mVideoUrl);
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    if (mExoPlayer != null) {
+      mPlayerPosition = mExoPlayer.getCurrentPosition();
+    }
+    //releasePlayer();
   }
 
   @Override

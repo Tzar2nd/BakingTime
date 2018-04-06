@@ -46,7 +46,9 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
   // when onCreate and onDataSetChanged are called, de-serialize the arraylist of ingredients
   // from the shared preferences using Gson and populate the arraylist.
   private void initIngredients() {
-    ingredients.clear();
+    if(ingredients != null) {
+      ingredients.clear();
+    }
 
     SharedPreferences prefs = PreferenceManager
         .getDefaultSharedPreferences(mContext.getApplicationContext());
@@ -66,7 +68,9 @@ class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
   @Override
   public int getCount() {
-    return ingredients.size();
+    if(ingredients != null) {
+      return ingredients.size();
+    } else return 0;
   }
 
   @Override

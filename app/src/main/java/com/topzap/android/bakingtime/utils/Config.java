@@ -16,6 +16,8 @@ public class Config {
   public static final String KEY_STEP_COUNT = "STEP_COUNT";
   public static final String KEY_SELECTED_RECIPE_STEPS = "SELECTED_RECIPE_STEPS";
   public static final String KEY_CURRENT_RECIPE_NAME = "CURRENT_RECIPE_NAME";
+  public static final String KEY_EXO_PLAYER_POSITION = "EXO_PLAYER_POSITION";
+  public static final String KEY_VIDEO_URL = "EXO_PLAYER_VIDEO_URL";
 
 
 

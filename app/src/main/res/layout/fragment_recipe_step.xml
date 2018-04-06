@@ -24,6 +24,13 @@
       android:layout_height="match_parent"
       />
 
+    <ImageView
+      android:layout_height="match_parent"
+      android:layout_width="match_parent"
+      android:background="@color/colorAccent"
+      android:id="@+id/iv_no_video"
+      android:contentDescription="Image PlaceHolder when no video"
+      />
   </FrameLayout>
 
   <android.support.constraint.Guideline

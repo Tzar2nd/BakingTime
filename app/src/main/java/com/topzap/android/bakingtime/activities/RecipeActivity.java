@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import butterknife.BindBool;
 import butterknife.ButterKnife;
 import com.topzap.android.bakingtime.R;
@@ -42,6 +43,12 @@ public class RecipeActivity extends AppCompatActivity
 
     // Get an instance of FragmentManager and begin a transaction
     mFragmentManager = getSupportFragmentManager();
+
+    // add back arrow to toolbar
+    if (getSupportActionBar() != null){
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
 
     // First time set up - attach one recipe list fragment to a single pane layout, and both
     // recipe list and recipe detail steps fragment if a two pane layout
@@ -89,7 +96,20 @@ public class RecipeActivity extends AppCompatActivity
   }
 
   @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == android.R.id.home) {
+      navigateBetweenFragments();
+    }
+
+    return super.onOptionsItemSelected(item);
+  }
+
+  @Override
   public void onBackPressed() {
+    navigateBetweenFragments();
+  }
+
+  private void navigateBetweenFragments() {
     Fragment fragment = mFragmentManager.findFragmentByTag("RECIPE_STEPS");
 
     // If single pane and recipe steps is showing, on a back press swap to the recipe list fragment
