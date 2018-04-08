@@ -18,6 +18,8 @@ public class Config {
   public static final String KEY_CURRENT_RECIPE_NAME = "CURRENT_RECIPE_NAME";
   public static final String KEY_EXO_PLAYER_POSITION = "EXO_PLAYER_POSITION";
   public static final String KEY_VIDEO_URL = "EXO_PLAYER_VIDEO_URL";
+  public static final String KEY_ARRAY_LIST_STATE = "MAIN_ACTIVITY_ARRAY_LIST_STATE";
+  public static final String KEY_PLAY_WHEN_READY = "EXO_PLAYER_PLAY_WHEN_READY";
 
 
 

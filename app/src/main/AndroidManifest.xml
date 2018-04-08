@@ -7,9 +7,9 @@
 
   <application
     android:allowBackup="true"
-    android:icon="@mipmap/icon_cupcake"
+    android:icon="@drawable/icon_cupcake"
     android:label="@string/app_name"
-    android:roundIcon="@mipmap/icon_cupcake"
+    android:roundIcon="@drawable/icon_cupcake"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
     <activity android:name=".activities.MainActivity">

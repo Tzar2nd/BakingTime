@@ -17,14 +17,11 @@
     android:textColor="#AAAAAA"
     tools:text="bla bla bla bla bla bla"/>
 
-  <ListView
-    android:id="@+id/lv_recipe_steps"
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/rv_recipe_steps"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:choiceMode="singleChoice"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    >
-  </ListView>
-
+    android:layout_margin="16dp">
+  </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

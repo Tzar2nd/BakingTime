@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -21,6 +22,7 @@ import com.topzap.android.bakingtime.R;
 import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.data.RecipeAdapter;
 import com.topzap.android.bakingtime.data.RecipeLoader;
+import com.topzap.android.bakingtime.utils.Config;
 import com.topzap.android.bakingtime.widget.SimpleIdlingResource;
 import java.util.ArrayList;
 
@@ -31,7 +33,10 @@ public class MainActivity extends AppCompatActivity implements
   private static final int RECIPE_LOADER_ID = 1;
   private static int mGridColumnCount = 1;
 
+  private ArrayList<Recipe> mRecipes;
   private RecipeAdapter mRecipeAdapter;
+  Parcelable mSavedRecyclerLayoutState;
+
 
   @Nullable
   private SimpleIdlingResource mIdlingResource;
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements
 
     checkInternetConnection();
 
-    ArrayList<Recipe> mRecipes = new ArrayList<>();
+    mRecipes = new ArrayList<>();
 
     setColumnCount();
     RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, mGridColumnCount);
@@ -69,8 +74,14 @@ public class MainActivity extends AppCompatActivity implements
     mRecipeAdapter = new RecipeAdapter(this, mRecipes);
     mRecipeRecyclerView.setAdapter(mRecipeAdapter);
 
+    // Get the scroll position
+    if(savedInstanceState != null) {
+      mSavedRecyclerLayoutState = savedInstanceState.getParcelable(Config.KEY_ARRAY_LIST_STATE);
+    }
+
     // Initialize the Loader to populate mRecipes
     getLoaderManager().restartLoader(RECIPE_LOADER_ID, null, this);
+
   }
 
   @Override
@@ -88,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements
     } else {
       mGridColumnCount = 1;
     }
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putParcelable(Config.KEY_ARRAY_LIST_STATE, mRecipeRecyclerView.getLayoutManager().onSaveInstanceState());
   }
 
   private boolean checkInternetConnection() {
@@ -128,6 +145,10 @@ public class MainActivity extends AppCompatActivity implements
     mRecipeAdapter.clear();
     mRecipeAdapter.addAll(recipes);
     mRecipeAdapter.notifyDataSetChanged();
+
+    // Restore the scroll position too
+    mRecipeRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerLayoutState);
+
   }
 
   @Override

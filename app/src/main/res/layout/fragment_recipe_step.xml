@@ -27,7 +27,8 @@
     <ImageView
       android:layout_height="match_parent"
       android:layout_width="match_parent"
-      android:background="@color/colorAccent"
+      android:background="@android:color/white"
+      android:padding="@dimen/default_margin_small"
       android:id="@+id/iv_no_video"
       android:contentDescription="Image PlaceHolder when no video"
       />

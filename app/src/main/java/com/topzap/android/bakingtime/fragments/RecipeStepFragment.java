@@ -51,7 +51,7 @@ public class RecipeStepFragment extends Fragment {
   @BindView(R.id.iv_no_video) ImageView mImageViewNoVideo;
 
   // ButterKnife Resource binding
-  @BindDrawable(R.mipmap.icon_cupcake) Drawable mRecipeDefaultImage;
+  @BindDrawable(R.drawable.icon_cupcake) Drawable mRecipeDefaultImage;
 
   private SimpleExoPlayer mExoPlayer;
 
@@ -63,6 +63,7 @@ public class RecipeStepFragment extends Fragment {
   private String mRecipeDescription;
   private String mThumbnailUrl;
   private String mVideoUrl;
+  private boolean mPlayWhenReady;
 
   public RecipeStepFragment() {
   }
@@ -104,11 +105,13 @@ public class RecipeStepFragment extends Fragment {
 
       setCurrentRecipeStepData(mPosition);
       mDescription.setText(mRecipeDescription);
+      mPlayWhenReady = true;
 
       initializeButtons();
 
     } else {
       mPlayerPosition = savedInstanceState.getLong(Config.KEY_EXO_PLAYER_POSITION);
+      mPlayWhenReady = savedInstanceState.getBoolean(Config.KEY_PLAY_WHEN_READY);
     }
 
     mBackButton.setOnClickListener(new OnClickListener() {
@@ -120,6 +123,7 @@ public class RecipeStepFragment extends Fragment {
           setCurrentRecipeStepData(mPosition);
           mDescription.setText(mRecipeDescription);
           setPlayerVisibility();
+          resetPlayerState();
 
           if (!Utils.isEmptyString(mVideoUrl)) {
             initializePlayer(Uri.parse(mVideoUrl));
@@ -139,16 +143,26 @@ public class RecipeStepFragment extends Fragment {
           setCurrentRecipeStepData(mPosition);
           mDescription.setText(mRecipeDescription);
           setPlayerVisibility();
+          resetPlayerState();
 
           if (!Utils.isEmptyString(mVideoUrl)) {
             initializePlayer(Uri.parse(mVideoUrl));
           }
         }
         initializeButtons();
+
       }
     });
 
     return rootView;
+  }
+
+  // Reset player state to the start if back or forward has been pressed
+  private void resetPlayerState() {
+    if(mExoPlayer != null) {
+     mPlayWhenReady = true;
+     mPlayerPosition = 0;
+    }
   }
 
   private void setCurrentRecipeStepData(int position) {
@@ -169,6 +183,7 @@ public class RecipeStepFragment extends Fragment {
       initializePlayer(Uri.parse(mCurrentStep.getVideoURL()));
     } else {
       Log.d(TAG, "setPlayerVisibility: Setting ImageView");
+      releasePlayer();
       ButterKnife.apply(mImageViewNoVideo, Utils.VISIBILITY, View.VISIBLE);
 
       if (!Utils.isEmptyString(mThumbnailUrl)) {
@@ -211,6 +226,7 @@ public class RecipeStepFragment extends Fragment {
       mExoPlayer.prepare(mediaSource);
       mExoPlayer.setPlayWhenReady(true);
       mExoPlayer.seekTo(mPlayerPosition);
+      mExoPlayer.setPlayWhenReady(mPlayWhenReady);
 
       mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
           (getResources(), R.color.colorText));
@@ -228,6 +244,7 @@ public class RecipeStepFragment extends Fragment {
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
+    outState.putBoolean(Config.KEY_PLAY_WHEN_READY, mPlayWhenReady);
     outState.putInt(Config.KEY_SELECTED_STEP, mPosition);
     outState.putLong(Config.KEY_EXO_PLAYER_POSITION, mPlayerPosition);
     outState.putString(Config.KEY_VIDEO_URL, mVideoUrl);
@@ -238,8 +255,30 @@ public class RecipeStepFragment extends Fragment {
     super.onPause();
     if (mExoPlayer != null) {
       mPlayerPosition = mExoPlayer.getCurrentPosition();
+      mPlayWhenReady = mExoPlayer.getPlayWhenReady();
     }
-    //releasePlayer();
+    releasePlayer();
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    if (mExoPlayer != null) {
+      mPlayerPosition = mExoPlayer.getCurrentPosition();
+    }
+    releasePlayer();
+
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    if ((Util.SDK_INT <= 23 || mExoPlayer == null)) {
+      setPlayerVisibility();
+      if (!Utils.isEmptyString(mVideoUrl)) {
+        initializePlayer(Uri.parse(mVideoUrl));
+      }
+    }
   }
 
   @Override

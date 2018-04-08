@@ -3,48 +3,51 @@ package com.topzap.android.bakingtime.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.topzap.android.bakingtime.R;
+import com.topzap.android.bakingtime.data.RecipeStepAdapter;
 import com.topzap.android.bakingtime.model.Recipe;
 import com.topzap.android.bakingtime.utils.Config;
 import java.util.List;
 
-public class RecipeSummaryFragment extends Fragment {
+public class RecipeSummaryFragment extends Fragment implements RecipeStepAdapter.RecipeStepOnClickListener {
 
   private static final String TAG = RecipeSummaryFragment.class.getName();
-  OnRecipeStepSelectedListener mCallback;
+
+  private OnRecipeStepSelectedListener mCallback;
 
   @BindView(R.id.tv_ingredients_list) TextView ingredientsTextView;
-  @BindView(R.id.lv_recipe_steps) ListView stepsListView;
+  @BindView(R.id.rv_recipe_steps) RecyclerView mStepsRecyclerView;
 
   Recipe currentRecipe;
   List<String> recipeSteps;
-  ArrayAdapter<String> adapter;
+  RecipeStepAdapter mRecipeStepAdapter;
+
+  @Override
+  public void onClick(int position) {
+    mCallback.onRecipeStepSelected(position);
+  }
 
   public interface OnRecipeStepSelectedListener {
-    public void onRecipeStepSelected(int position);
+    void onRecipeStepSelected(int position);
   }
 
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
 
-    // This makes sure that the container activity has implemented
-    // the callback interface. If not, it throws an exception
+    // This ensures that the host activity has implemented the callback interface, else it throws an exception
     try {
       mCallback = (OnRecipeStepSelectedListener) context;
     } catch (ClassCastException e) {
-      throw new ClassCastException(context.toString()
-          + " must implement OnHeadlineSelectedListener");
+      throw new ClassCastException(String.format("Must implement onclicklistener", context.toString()));
     }
   }
 
@@ -59,29 +62,17 @@ public class RecipeSummaryFragment extends Fragment {
     ButterKnife.bind(this, rootView);
 
     currentRecipe = getArguments().getParcelable(Config.KEY_RECIPE);
+
     ingredientsTextView.setText(currentRecipe.getIngredientsString());
+
+    mStepsRecyclerView.setHasFixedSize(true);
+    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+    mStepsRecyclerView.setLayoutManager(mLayoutManager);
+
+    mRecipeStepAdapter = new RecipeStepAdapter(this);
     recipeSteps = currentRecipe.getRecipeStepsList();
-
-    if(adapter == null) {
-      adapter = new ArrayAdapter<String>(
-          getActivity(),
-          android.R.layout.simple_list_item_1,
-          recipeSteps);
-    } else {
-      adapter.clear();
-      adapter.addAll(recipeSteps);
-    }
-
-    stepsListView.setAdapter(adapter);
-
-    stepsListView.setOnItemClickListener(new OnItemClickListener() {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        view.getFocusables(position);
-        view.setSelected(true);
-        mCallback.onRecipeStepSelected(position);
-      }
-    });
+    mStepsRecyclerView.setAdapter(mRecipeStepAdapter);
+    mRecipeStepAdapter.addAll(recipeSteps);
 
     return rootView;
   }
